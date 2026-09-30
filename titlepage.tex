@@ -1,0 +1,158 @@
+\newcommand{\baumanUniversityHeader}{%
+	\noindent
+	\begin{minipage}[c]{25mm}
+		\centering
+		\includegraphics[width=25mm]{\baumanLogoPath}
+	\end{minipage}%
+	\begin{minipage}[c]{135mm}
+		\centering
+		\baumanfont
+		\bfseries
+		\fontsize{11}{10}\selectfont
+		Министерство науки и высшего образования Российской Федерации\\
+		Федеральное государственное автономное образовательное учреждение\\
+		высшего образования\\
+		«Московский государственный технический университет\\
+		имени Н. Э. Баумана\\
+		(национальный исследовательский университет)»\\
+		(МГТУ им. Н.Э. Баумана)
+	\end{minipage}%
+	\par\vspace{6mm}
+	\noindent\rule{\textwidth}{3pt}
+	\par\vspace{6mm}
+}
+
+\newcommand{\baumanInfoRow}[2]{%
+	\par
+	\baumanfont
+	\mdseries
+	\fontsize{12}{14}\selectfont
+	\noindent
+	\makebox[25mm][l]{#1}%
+	\hspace{2mm}%
+	\underline{\makebox[125mm][c]{#2}}%
+	\par
+}
+
+\newcommand{\baumanLabTitle}[3]{%
+\par
+\begingroup
+\centering
+\baumanfont
+
+{\bfseries
+	\fontsize{22}{17}\selectfont
+	\underline{Лабораторная работа №#1}%
+	\par
+}
+
+\bigskip
+
+{\fontsize{14}{17}\selectfont
+по курсу
+{\bfseries «#2»}%
+\par
+
+на тему
+\par
+
+{\bfseries «#3»}%
+\par
+}
+
+\endgroup
+}
+
+\newcommand{\baumanAuthors}[3]{%
+	\par
+	\noindent
+	\begingroup
+	\setlength{\parindent}{0pt}%
+	\setlength{\leftskip}{0pt}%
+	\baumanfont
+	\mdseries
+	\fontsize{12}{14}\selectfont
+
+	\setlength{\tabcolsep}{3pt}%
+
+	\begin{tabularx}{\dimexpr\linewidth-20mm\relax}{%
+		@{}
+		>{\raggedright\arraybackslash}X
+		>{\centering\arraybackslash}p{18mm}
+		>{\centering\arraybackslash}p{18mm}
+		@{}
+		}
+		Выполнил: #2\newline
+		Группа: #1
+		 &
+		\shortstack[c]{%
+		\rule{16mm}{0.4pt} \\[-1mm]
+		{\fontsize{9}{11}\selectfont (подпись)}
+		}
+		 &
+		\shortstack[c]{%
+		\rule{16mm}{0.4pt} \\[-1mm]
+		{\fontsize{9}{11}\selectfont (дата)}
+		}
+		\\[10mm]
+
+		Проверил: #3
+		 &
+		\shortstack[c]{%
+		\rule{16mm}{0.4pt} \\[-1mm]
+		{\fontsize{9}{11}\selectfont (подпись)}
+		}
+		 &
+		\shortstack[c]{%
+		\rule{16mm}{0.4pt} \\[-1mm]
+		{\fontsize{9}{11}\selectfont (дата)}
+		}
+	\end{tabularx}
+
+	\endgroup
+	\par
+}
+
+\newcommand{\baumanPlace}[2]{%
+	\par
+	\begingroup
+	\centering
+	\baumanfont
+	\mdseries
+	\fontsize{12}{14}\selectfont
+	#1, #2 г.%
+	\par
+	\endgroup
+}
+
+\begin{titlepage}
+	\baumanUniversityHeader
+
+	\baumanInfoRow
+	{ФАКУЛЬТЕТ}
+	{Информатика, искусственный интеллект и системы управления}
+
+	\vspace{4mm}
+
+	\baumanInfoRow
+	{КАФЕДРА}
+	{Системы обработки информации и управления}
+
+	\vfill
+
+	\baumanLabTitle
+	{1}
+	{Технологии разработки программного обеспечения}
+	{Управление программным проектом на примере модели Agile/Scrum}
+
+	\vfill
+
+	\baumanAuthors
+	{ИУ5-11М}
+	{Давыдов В. Ю.}
+	{Виноградова М. В.}
+
+	\vfill
+
+	\baumanPlace{Москва}{2026}
+\end{titlepage}
