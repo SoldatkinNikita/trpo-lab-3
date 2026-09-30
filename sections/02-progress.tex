@@ -40,3 +40,134 @@
 	\caption{Фиксация изменения «Give a personalized hello»}
 	\label{fig:personalized-hello-commit}
 \end{figure}
+
+\subsection{Ветвление}
+
+Для разработки нового функционала без риска для стабильной ветки создана
+и выбрана новая ветка «lastname». В этой ветке main.c изменён так, чтобы
+программа запрашивала также фамилию пользователя и выводила её вместе с именем.
+Изменение зафиксировано коммитом «Prompt user for last name as well.».
+На рисунке~\ref{fig:lastname-commit} показана фиксация изменений в ветке lastname.
+
+\begin{figure}[htbp]
+	\centering
+	\reportScreenshot{figures/04-lastname-commit.png}
+	\caption{Фиксация изменений в ветке lastname}
+	\label{fig:lastname-commit}
+\end{figure}
+
+Далее выполнено переключение обратно на ветку master. В ветке master
+исправлена грамматическая ошибка приветствия (добавлена запятая перед именем)
+и зафиксирован коммит «Use proper grammar.».
+На рисунке~\ref{fig:grammar-commit} приведён граф истории всех веток
+(Repository => Visualize All Branch History), демонстрирующий расхождение
+веток master и lastname от общего предка.
+
+\begin{figure}[htbp]
+	\centering
+	\reportScreenshot{figures/05-grammar-commit.png}
+	\caption{Исправление в ветке master и история ветвления}
+	\label{fig:grammar-commit}
+\end{figure}
+
+\subsection{Слияние веток}
+
+Выполнено слияние ветки lastname в master. Так как обе ветки изменяли
+одну и ту же строку файла main.c, при слиянии возник конфликт.
+Конфликт разрешён вручную в текстовом редакторе Git GUI: в итоговом коде
+оставлены запрос имени и фамилии (из ветки lastname) вместе с исправленной
+грамматикой (из ветки master). После разрешения конфликта изменения
+проиндексированы и зафиксирован коммит слияния «Merge branch 'lastname'».
+На рисунке~\ref{fig:merge-commit} показана фиксация слияния веток.
+
+\begin{figure}[htbp]
+	\centering
+	\reportScreenshot{figures/06-merge-commit.png}
+	\caption{Фиксация слияния ветки lastname в master с разрешением конфликта}
+	\label{fig:merge-commit}
+\end{figure}
+
+\subsection{Просмотр истории}
+
+Для демонстрации возможностей просмотра истории код запроса имени и фамилии
+вынесен из main.c в отдельную функцию askname() и отдельные файлы
+askname.c и askname.h. Изменение зафиксировано коммитом
+«Move the ask name code into its own function and file.».
+На рисунке~\ref{fig:askname-commit} показана данная фиксация в gitk,
+а также использование истории для поиска изменений по нескольким файлам.
+
+\begin{figure}[htbp]
+	\centering
+	\reportScreenshot{figures/07-askname-commit.png}
+	\caption{Фиксация выноса кода в отдельные файлы askname.c и askname.h}
+	\label{fig:askname-commit}
+\end{figure}
+
+Просмотр истории отдельного файла (в том числе через
+Repository => Browse master's Files и git blame) позволяет установить
+автора и коммит, в котором была добавлена или перемещена конкретная строка
+кода. Это особенно полезно при совместной разработке несколькими участниками.
+
+\subsection{Отмена изменений (revert)}
+
+Продемонстрирован откат изменений через создание обратного коммита (revert):
+для коммита «Move the ask name code into its own function and file.»
+выполнена команда «Revert this commit». При этом создаётся новая фиксация,
+отменяющая внесённые изменения, а сама история репозитория не переписывается.
+На рисунке~\ref{fig:revert-commit} показан результат отката изменений.
+
+\begin{figure}[htbp]
+	\centering
+	\reportScreenshot{figures/08-revert-commit.png}
+	\caption{Фиксация отката изменений (revert)}
+	\label{fig:revert-commit}
+\end{figure}
+
+\subsection{Публикация изменений на удалённом репозитории (GitHub)}
+
+Для совместной разработки локальный репозиторий опубликован на удалённом
+сервере GitHub: на сайте создан новый удалённый репозиторий, после чего
+с помощью команды push в него отправлены ветки локального репозитория.
+На рисунке~\ref{fig:github-repository} показано содержимое опубликованного
+репозитория на GitHub: список файлов проекта (main.c, askname.c, askname.h)
+с сообщениями и датами последних фиксаций для каждого файла.
+
+\begin{figure}[htbp]
+	\centering
+	\reportScreenshot{figures/09-github-repository.png}
+	\caption{Содержимое репозитория, опубликованного на GitHub}
+	\label{fig:github-repository}
+\end{figure}
+
+Далее продемонстрирована коллективная разработка через механизм форков
+и pull request'ов. Члены команды сделали форк репозитория и внесли в свою
+копию изменения. Был оформлен pull request на слияние.
+На рисунке~\ref{fig:pull-requests} приведён список открытых pull request'ов
+репозитория на GitHub.
+
+\begin{figure}[htbp]
+	\centering
+	\reportScreenshot{figures/10-pull-requests.png}
+	\caption{Список открытых pull request'ов репозитория на GitHub}
+	\label{fig:pull-requests}
+\end{figure}
+
+После проверки предложенных изменений pull request был принят и слит
+в ветку master. На рисунке~\ref{fig:pull-request-merge} в окне gitk показана
+итоговая история удалённой ветки: слияние отображено отдельной фиксацией
+«Merge pull request \#1 from IVitaliyl/master», а в нижней части окна
+приведён diff, демонстрирующий добавленную участником строку в файле main.c.
+
+\begin{figure}[htbp]
+	\centering
+	\reportScreenshot{figures/11-pull-request-merge.png}
+	\caption{История удалённой ветки после слияния pull request'а (gitk)}
+	\label{fig:pull-request-merge}
+\end{figure}
+
+Таким образом, продемонстрирован полный цикл коллективной разработки
+через GitHub: публикация локального репозитория на удалённом сервере,
+внесение изменений сторонним участником через форк и pull request,
+проверка и слияние предложенных изменений владельцем репозитория,
+а также просмотр итоговой истории слияний и различий, внесённых
+разными участниками проекта.
