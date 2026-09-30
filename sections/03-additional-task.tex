@@ -1,3 +1,152 @@
 \section{Дополнительное задание}
 
-\subsection{Создание репозитория и фиксация начального состояния}
+В рамках дополнительного задания продемонстрирована работа с тегами,
+командами отмены изменений revert и reset, перебазированием веток,
+временным сохранением незавершённых изменений и серией патчей.
+
+\subsection{Создание и применение тегов}
+
+Для фиксации состояния репозитория, соответствующего версии 1.0, создан
+аннотированный тег v1.0. Команде \verb|git tag -a| переданы идентификатор
+коммита ba097ef и сообщение «Doing additional tasks». Наличие тега проверено
+командами \verb|git tag| и \verb|git log --oneline --decorate|. Как видно
+на рисунке~\ref{fig:additional-tag}, тег v1.0 указывает на выбранный коммит,
+не изменяя историю ветки master.
+
+\begin{figure}[H]
+	\centering
+	\reportScreenshot{figures/12-git-create-tag.png}
+	\caption{Создание аннотированного тега v1.0}
+	\label{fig:additional-tag}
+\end{figure}
+
+\subsection{Отмена изменений с помощью revert}
+
+После создания ошибочного коммита «Probably this is a mistake...» на него
+установлен тег v1.0.1.
+
+Команда \verb|git revert v1.0.1| отменила это изменение. Тег использован
+как ссылка на требуемый коммит. Git создал новый коммит, содержащий
+обратные изменения, при этом
+исходный ошибочный коммит остался в истории. Результат операции представлен
+на рисунке~\ref{fig:additional-revert}.
+
+\begin{figure}[H]
+	\centering
+	\reportScreenshot{figures/13-git-revert.png}
+	\caption{Отмена коммита командой revert с применением тега}
+	\label{fig:additional-revert}
+\end{figure}
+
+\subsection{Сброс состояния с помощью reset}
+
+Для возврата ветки master к ранее отмеченной версии выполнена команда
+\verb|git reset --hard v1.0|. В отличие от revert, команда reset переместила
+указатель ветки непосредственно на коммит, отмеченный тегом v1.0, и привела
+индекс и рабочий каталог к его состоянию. Коммиты, созданные после версии 1.0,
+перестали входить в текущую историю ветки, что показано на
+рисунке~\ref{fig:additional-reset}.
+
+\begin{figure}[H]
+	\centering
+	\reportScreenshot{figures/14-git-reset.png}
+	\caption{Жёсткий сброс ветки master до состояния, отмеченного тегом v1.0}
+	\label{fig:additional-reset}
+\end{figure}
+
+\subsection{Перебазирование ветки (rebase)}
+
+Для демонстрации перебазирования создана ветка readme, в которой добавлен
+файл readme.md и выполнен коммит «Readme: added basic description».
+В ветке master независимо создан файл с тем же именем, но другим содержимым,
+после чего выполнено переключение обратно на ветку readme. Подготовка веток
+к перебазированию показана на рисунке~\ref{fig:additional-rebase-prepare}.
+
+\begin{figure}[H]
+	\centering
+	\reportScreenshot{figures/15-git-rebase.png}
+	\caption{Подготовка веток master и readme к перебазированию}
+	\label{fig:additional-rebase-prepare}
+\end{figure}
+
+При выполнении команды \verb|git rebase master| возник конфликт добавления
+файла readme.md, так как файл был независимо создан в обеих ветках.
+Конфликт разрешён вручную, исправленный файл добавлен в индекс командой
+\verb|git add readme.md|, после чего перебазирование продолжено командой
+\verb|git rebase --continue|. Итоговый граф истории на
+рисунке~\ref{fig:additional-rebase-result} показывает, что коммит ветки
+readme был пересоздан поверх актуального состояния master.
+
+\begin{figure}[H]
+	\centering
+	\reportScreenshot{figures/16-git-rebase-conflict.png}
+	\caption{Разрешение конфликта и завершение перебазирования ветки readme}
+	\label{fig:additional-rebase-result}
+\end{figure}
+
+\subsection{Временное сохранение изменений (stash)}
+
+В файл readme.md внесено незавершённое изменение, после чего рабочее состояние
+сохранено командой \verb|git stash push -m| с сообщением
+«WIP: новый крутой функционал».
+Команда \verb|git stash list| подтвердила появление записи stash. После этого
+в файл askname.h внесено срочное исправление и создан отдельный коммит
+«hotfix». Команда \verb|git stash pop| восстановила отложенное изменение
+readme.md и одновременно удалила использованную запись из stash. Затем
+восстановленное изменение было зафиксировано отдельным коммитом. Полная
+последовательность действий приведена на рисунке~\ref{fig:additional-stash}.
+
+\begin{figure}[H]
+	\centering
+	\reportScreenshot{figures/17-git-stash.png}
+	\caption{Сохранение изменений в stash и их последующее восстановление}
+	\label{fig:additional-stash}
+\end{figure}
+
+\subsection{Создание и применение серии патчей}
+
+В каталоге patches подготовлена серия из трёх патчей, соответствующих
+последовательным изменениям «Feature part 1», «Feature part 2» и
+«Feature part 3». Каждый патч применён командой \verb|git am|. Git сохранил
+авторство и сообщения исходных коммитов; выведенные предупреждения относятся
+к завершающим пробелам в строках патчей и не препятствуют их применению.
+Процесс показан на рисунке~\ref{fig:additional-patches-apply}.
+
+\begin{figure}[H]
+	\centering
+	\reportScreenshot{figures/18-git-patches.png}
+	\caption{Последовательное применение серии патчей командой git am}
+	\label{fig:additional-patches-apply}
+\end{figure}
+
+После применения патчей выполнена команда \verb|git log --oneline|.
+В истории ветки master появились три последовательных коммита Feature part 1,
+Feature part 2 и Feature part 3, что подтверждает корректное применение всей
+серии. Итоговая история показана на
+рисунке~\ref{fig:additional-patches-result}.
+
+\begin{figure}[H]
+	\centering
+	\reportScreenshot{figures/19-git-log.png}
+	\caption{История репозитория после применения серии патчей}
+	\label{fig:additional-patches-result}
+\end{figure}
+
+Для создания серии использована команда \verb|git format-patch|
+с параметрами \verb|-6 -o patches|. В каталоге patches сформировано
+шесть файлов, по одному для каждого из шести последних коммитов. Имена файлов
+содержат порядковый номер и сообщение соответствующего коммита. Результат
+создания серии представлен на рисунке~\ref{fig:additional-patches-create}.
+
+\begin{figure}[H]
+	\centering
+	\reportScreenshot{figures/20-git-patches-list.png}
+	\caption{Создание серии патчей командой git format-patch}
+	\label{fig:additional-patches-create}
+\end{figure}
+
+Таким образом, в дополнительном задании продемонстрированы два способа
+отмены изменений, использование тегов как именованных указателей на коммиты,
+перенос коммитов между основаниями с помощью rebase, временное сохранение
+рабочего состояния в stash, а также перенос серии изменений посредством
+патчей.
