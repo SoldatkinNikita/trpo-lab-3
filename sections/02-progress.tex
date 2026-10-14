@@ -1,173 +1,246 @@
 \section{Ход работы}
 
-\subsection{Создание репозитория и фиксация начального состояния}
+Основная часть посвящена системе Doxygen. Для документирования использован проект
+Beatstore Backend: серверное приложение музыкального каталога на Python.
+Примеры описаний рассмотрены на классе \texttt{TagRepository},
+а наследование -- на модели \texttt{Product}.
 
-С помощью контекстного меню проводника Windows в рабочей папке проекта
-\verb|BMSTU_IU5_MAGA_TERM1-TRPO-Lab1| запущен Git GUI, создан новый локальный
-репозиторий. В каталог репозитория добавлен файл main.c с исходным кодом
-программы, выводящей приветствие «Hello world!».
-На рисунке~\ref{fig:file-1} показано состояние main.c до добавления в список на фиксацию.
+\subsection{Комментирование исходного кода по правилам Doxygen}
 
-\begin{figure}[htbp]
-	\centering
-	\reportScreenshot{figures/01-file.png}
-	\caption{Файл main.c перед добавлением в фиксацию (Git GUI)}
-	\label{fig:file-1}
-\end{figure}
+В файле \texttt{repository.py} подготовлены специальные комментарии.
+Блок документации начинается с \verb|##|, последующие строки --- с \verb|#|.
+Использованы команды \texttt{@file} для файла, \texttt{@brief} для краткого
+описания, \texttt{@details} для подробного описания, \texttt{@param} для
+параметров, \texttt{@return} для результата, \texttt{@var} для атрибута
+и \texttt{@note} для особенностей реализации [2, 3].
 
-После подготовки файла и ввода комментария к фиксации выполнен первый commit
-с сообщением «Initial commit». На рисунке~\ref{fig:init-commit} в окне gitk показана история
-репозитория и содержимое зафиксированного изменения.
+Фрагмент комментария к классу имеет следующий вид:
 
-\begin{figure}[htbp]
-	\centering
-	\reportScreenshot{figures/02-init-commit.png}
-	\caption{История после фиксации начального состояния (Initial commit)}
-	\label{fig:init-commit}
-\end{figure}
+\begingroup
+\small
+\renewcommand{\ttdefault}{\rmdefault}
+\begin{verbatim}
+## @brief Репозиторий тегов.
+# @details Выполняет запросы к тегам через переданную асинхронную
+# сессию SQLAlchemy.
+class TagRepository:
+\end{verbatim}
+\endgroup
 
-\subsection{Внесение изменений и повторная фиксация}
+Аналогично описаны конструктор, методы получения тегов и атрибут
+\texttt{session}. Для поиска по идентификатору указаны входной параметр
+\verb|tag_id|, результат \verb!Tag | None! и загрузка связанных продуктов.
+Эта загрузка выполняется через \verb|selectinload(Tag.products)|.
+Сохранённый файл содержит одновременно реализацию и сведения для
+генератора справки.
 
-Программа доработана: вместо статического текста main.c
-теперь запрашивает у пользователя имя (fgets) и выводит
-персонализированное приветствие. Изменения проиндексированы
-и зафиксированы отдельным коммитом «Give a personalized hello.».
-На рисунке~\ref{fig:personalized-hello-commit} приведена фиксация данного изменения в gitk (показаны изменения в main.c).
+\subsection{Запуск Doxygen и настройка проекта}
 
-\begin{figure}[H]
-	\centering
-	\reportScreenshot{figures/03-personalized-hello-commit.png}
-	\caption{Фиксация изменения «Give a personalized hello»}
-	\label{fig:personalized-hello-commit}
-\end{figure}
+В соответствии с методическими указаниями настройка включает название проекта,
+каталог исходников, рекурсивное сканирование и каталог результата.
+Для рассматриваемого Python-проекта выбираются файлы \texttt{.py},
+а кодировка входных файлов должна соответствовать UTF-8.
+Русские заголовки полученных страниц отражают выбор русского языка
+документации.
 
-\subsection{Ветвление}
+Ниже приведён пример параметров \texttt{Doxyfile} для воспроизведения
+такой документации с обоими форматами вывода [4].
+Пути заданы относительно корня документируемого проекта:
 
-Для разработки нового функционала без риска для стабильной ветки создана
-и выбрана новая ветка «lastname». В этой ветке main.c изменён так, чтобы
-программа запрашивала также фамилию пользователя и выводила её вместе с именем.
-Изменение зафиксировано коммитом «Prompt user for last name as well.».
-На рисунке~\ref{fig:lastname-commit} показана фиксация изменений в ветке lastname.
+\begingroup
+\small
+\begin{verbatim}
+PROJECT_NAME       = "Beatstore Backend"
+INPUT              = .
+FILE_PATTERNS      = *.py *.dox *.md
+RECURSIVE          = YES
+INPUT_ENCODING     = UTF-8
+OUTPUT_LANGUAGE    = Russian
+OUTPUT_DIRECTORY   = docs
+OPTIMIZE_OUTPUT_JAVA = YES
+SOURCE_BROWSER     = YES
+GENERATE_HTML      = YES
+GENERATE_RTF       = YES
+GENERATE_LATEX     = NO
+CLASS_GRAPH        = YES
+\end{verbatim}
+\endgroup
 
-\begin{figure}[htbp]
-	\centering
-	\reportScreenshot{figures/04-lastname-commit.png}
-	\caption{Фиксация изменений в ветке lastname}
-	\label{fig:lastname-commit}
-\end{figure}
+Параметр \verb|SOURCE_BROWSER| обеспечивает переход к исходному тексту,
+а \verb|CLASS_GRAPH| включает отображение наследования.
 
-Далее выполнено переключение обратно на ветку master. В ветке master
-исправлена грамматическая ошибка приветствия (добавлена запятая перед именем)
-и зафиксирован коммит «Use proper grammar.».
-На рисунке~\ref{fig:grammar-commit} приведён граф истории всех веток
-(Repository => Visualize All Branch History), демонстрирующий расхождение
-веток master и lastname от общего предка.
+\subsection{Генерация документации и просмотр результата}
 
-\begin{figure}[htbp]
-	\centering
-	\reportScreenshot{figures/05-grammar-commit.png}
-	\caption{Исправление в ветке master и история ветвления}
-	\label{fig:grammar-commit}
-\end{figure}
+Для создания шаблона настроек и запуска генератора из корня проекта
+используются команды:
 
-\subsection{Слияние веток}
+\begingroup
+\small
+\begin{verbatim}
+doxygen -g Doxyfile
+doxygen Doxyfile
+\end{verbatim}
+\endgroup
 
-Выполнено слияние ветки lastname в master. Так как обе ветки изменяли
-одну и ту же строку файла main.c, при слиянии возник конфликт.
-Конфликт разрешён вручную в текстовом редакторе Git GUI: в итоговом коде
-оставлены запрос имени и фамилии (из ветки lastname) вместе с исправленной
-грамматикой (из ветки master). После разрешения конфликта изменения
-проиндексированы и зафиксирован коммит слияния «Merge branch 'lastname'».
-На рисунке~\ref{fig:merge-commit} показана фиксация слияния веток.
+После настройки в графическом интерфейсе аналогичный запуск выполняется
+на вкладке Run кнопкой Run Doxygen. Для приведённых выше путей HTML-справка
+открывается через \texttt{docs/html/index.html}, а RTF-документ ---
+через \texttt{docs/rtf/refman.rtf} в текстовом редакторе, поддерживающем RTF.
+Формат RTF включается параметром \verb|GENERATE_RTF = YES| [4].
 
-\begin{figure}[htbp]
-	\centering
-	\reportScreenshot{figures/06-merge-commit.png}
-	\caption{Фиксация слияния ветки lastname в master с разрешением конфликта}
-	\label{fig:merge-commit}
-\end{figure}
+Предоставленные результаты демонстрируют просмотр HTML-страниц в браузере.
 
-\subsection{Просмотр истории}
+\subsection{Краткое и подробное описание класса}
 
-Для демонстрации возможностей просмотра истории код запроса имени и фамилии
-вынесен из main.c в отдельную функцию askname() и отдельные файлы
-askname.c и askname.h. Изменение зафиксировано коммитом
-«Move the ask name code into its own function and file.».
-На рисунке~\ref{fig:askname-commit} показана данная фиксация в gitk,
-а также использование истории для поиска изменений по нескольким файлам.
-
-\begin{figure}[htbp]
-	\centering
-	\reportScreenshot{figures/07-askname-commit.png}
-	\caption{Фиксация выноса кода в отдельные файлы askname.c и askname.h}
-	\label{fig:askname-commit}
-\end{figure}
-
-Просмотр истории отдельного файла (в том числе через
-Repository => Browse master's Files и git blame) позволяет установить
-автора и коммит, в котором была добавлена или перемещена конкретная строка
-кода. Это особенно полезно при совместной разработке несколькими участниками.
-
-\subsection{Отмена изменений (revert)}
-
-Продемонстрирован откат изменений через создание обратного коммита (revert):
-для коммита «Move the ask name code into its own function and file.»
-выполнена команда «Revert this commit». При этом создаётся новая фиксация,
-отменяющая внесённые изменения, а сама история репозитория не переписывается.
-На рисунке~\ref{fig:revert-commit} показан результат отката изменений.
-
-\begin{figure}[htbp]
-	\centering
-	\reportScreenshot{figures/08-revert-commit.png}
-	\caption{Фиксация отката изменений (revert)}
-	\label{fig:revert-commit}
-\end{figure}
-
-\subsection{Публикация изменений на удалённом репозитории (GitHub)}
-
-Для совместной разработки локальный репозиторий опубликован на удалённом
-сервере GitHub: на сайте создан новый удалённый репозиторий, после чего
-с помощью команды push в него отправлены ветки локального репозитория.
-На рисунке~\ref{fig:github-repository} показано содержимое опубликованного
-репозитория на GitHub: список файлов проекта (main.c, askname.c, askname.h)
-с сообщениями и датами последних фиксаций для каждого файла.
+На странице \texttt{repository.TagRepository} краткое описание
+«Репозиторий тегов» отображается под именем класса.
+Раздел «Подробное описание» уточняет, что запросы выполняются через
+переданную асинхронную сессию SQLAlchemy.
+На рисунке~\ref{fig:doxygen-class} также перечислены конструктор,
+три метода чтения тегов и открытый атрибут \texttt{session}.
 
 \begin{figure}[H]
 	\centering
-	\reportScreenshot{figures/09-github-repository.png}
-	\caption{Содержимое репозитория, опубликованного на GitHub}
-	\label{fig:github-repository}
+	\reportScreenshot{figures/05-short-and-long-class-desc.png}
+	\caption{Краткое и подробное описание класса TagRepository}
+	\label{fig:doxygen-class}
 \end{figure}
 
-Далее продемонстрирована коллективная разработка через механизм форков
-и pull request'ов. Члены команды сделали форк репозитория и внесли в свою
-копию изменения. Был оформлен pull request на слияние.
-На рисунке~\ref{fig:pull-requests} приведён список открытых pull request'ов
-репозитория на GitHub.
+Разделение описания на краткую и подробную части позволяет сначала
+определить назначение класса, затем ознакомиться с его зависимостями
+и доступными операциями.
 
-\begin{figure}[htbp]
-	\centering
-	\reportScreenshot{figures/10-pull-requests.png}
-	\caption{Список открытых pull request'ов репозитория на GitHub}
-	\label{fig:pull-requests}
-\end{figure}
+\subsection{Краткое и подробное описание функции класса}
 
-После проверки предложенных изменений pull request был принят и слит
-в ветку master. На рисунке~\ref{fig:pull-request-merge} в окне gitk показана
-итоговая история удалённой ветки: слияние отображено отдельной фиксацией
-«Merge pull request \#1 from IVitaliyl/master», а в нижней части окна
-приведён diff, демонстрирующий добавленную участником строку в файле main.c.
+Для метода \verb|get_all_active_tags()| краткое описание сформулировано
+как «Возвращает список тегов». Подробная часть поясняет фактическую
+реализацию -- эти сведения и описание возвращаемого значения
+показаны на рисунке~\ref{fig:doxygen-method}.
 
 \begin{figure}[H]
 	\centering
-	\reportScreenshot{figures/11-pull-request-merge.png}
-	\caption{История удалённой ветки после слияния pull request'а (gitk)}
-	\label{fig:pull-request-merge}
+	\reportScreenshot{figures/06-input-and-output-func-params.png}
+	\caption{Описание метода get\_all\_active\_tags() и его результата}
+	\label{fig:doxygen-method}
 \end{figure}
 
-Таким образом, продемонстрирован полный цикл коллективной разработки
-через GitHub: публикация локального репозитория на удалённом сервере,
-внесение изменений сторонним участником через форк и pull request,
-проверка и слияние предложенных изменений владельцем репозитория,
-а также просмотр итоговой истории слияний и различий, внесённых
-разными участниками проекта.
+Возвращаемое значение -- список объектов \texttt{Tag} либо пустой список,
+если записи отсутствуют.
+
+\subsection{Входные параметры и возвращаемые значения функций}
+
+На странице \verb|get_tag_by_name()| команда \texttt{@param} формирует
+раздел «Аргументы»: параметр \texttt{name} описан как имя тега для поиска.
+Команда \texttt{@return} формирует раздел «Возвращает»: первый найденный
+объект \texttt{Tag} либо \texttt{None}, если совпадений нет.
+Результат приведён на рисунке~\ref{fig:doxygen-parameters}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[trim=0 0 465bp 0,clip,width=0.9\textwidth]
+	{figures/07-short-and-long-class-func-desc.png}
+	\caption{Входной параметр, результат и заметка метода get\_tag\_by\_name()}
+	\label{fig:doxygen-parameters}
+\end{figure}
+
+Заметка \texttt{@note} отдельно поясняет поведение \texttt{first()}:
+при нескольких совпадениях возвращается первое, исключение не возникает.
+Для конструктора аналогично описан параметр \texttt{session}, а для
+\verb|get_tag_by_id()| -- параметр \verb|tag_id| и результат \verb!Tag | None!.
+
+\subsection{Описание переменных класса}
+
+Атрибут \texttt{session} содержит асинхронную сессию SQLAlchemy,
+через которую репозиторий выполняет запросы. В исходном файле
+его назначение задано отдельным блоком:
+
+\begingroup
+\small
+\renewcommand{\ttdefault}{\rmdefault}
+\begin{verbatim}
+## @var session
+# @brief Асинхронная сессия SQLAlchemy, используемая репозиторием.
+\end{verbatim}
+\endgroup
+
+На рисунке~\ref{fig:doxygen-attribute} показано описание атрибута,
+включённое в документацию класса.
+
+\begin{figure}[H]
+	\centering
+	\reportScreenshot{figures/08-class-vars-desc.png}
+	\caption{Описание атрибута session класса TagRepository}
+	\label{fig:doxygen-attribute}
+\end{figure}
+
+\subsection{Описание проекта}
+
+Главная страница Beatstore Backend содержит название и краткую
+характеристику проекта: \textit{Python backend: domains, API and infrastructure}.
+В подробном описании указан API музыкального каталога и используемые
+технологии: Python/FastAPI, SQLAlchemy Async/PostgreSQL, Pydantic и S3.
+Далее перечислены разделы архитектуры, работы с тегами, базы данных
+и общих компонентов (рисунок~\ref{fig:doxygen-project}).
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]
+	{figures/09-project-desc-and-file-link-in-desc.png}
+	\par\smallskip
+	\includegraphics[trim=0 0 970bp 510bp,clip,width=0.85\textwidth]
+	{figures/09-project-desc-and-file-link-in-desc.png}
+	\caption{Главная страница проекта и увеличенный фрагмент ссылок на файлы}
+	\label{fig:doxygen-project}
+\end{figure}
+
+Ссылки «Реализация TagRepository» и «ORM-модель тега» размещены
+в разделе «Ключевые файлы». Они связывают описание архитектуры
+с исходными файлами.
+Главная страница задаётся командой \texttt{@mainpage},
+а ссылки на объекты и файлы --- командой \texttt{@ref} [3].
+
+\subsection{Описание файла и ссылка на него в описании проекта}
+
+В начале \texttt{repository.py} расположен следующий блок:
+
+\begingroup
+\small
+\renewcommand{\ttdefault}{\rmdefault}
+\begin{verbatim}
+## @file
+# @brief Репозиторий для чтения тегов из базы данных.
+\end{verbatim}
+\endgroup
+
+На рисунке~\ref{fig:doxygen-file} показана страница файла.
+Она содержит его назначение, класс \texttt{TagRepository},
+пространство имён \texttt{repository} и ссылку на исходный текст.
+
+\begin{figure}[H]
+	\centering
+	\reportScreenshot{figures/10-file-desc.png}
+	\caption{Описание файла repository.py}
+	\label{fig:doxygen-file}
+\end{figure}
+
+Ссылка на реализацию репозитория на главной странице проекта
+(рисунок~\ref{fig:doxygen-project}) обеспечивает переход от общего
+описания к файлу.
+
+\subsection{Описание производного класса}
+
+В качестве производного класса рассмотрена модель \texttt{Product}.
+На рисунке~\ref{fig:doxygen-derived-class} видны её базовые классы
+\texttt{IdIntPKMixin}, \texttt{CreatedAtMixin} и \texttt{Base},
+а также граф наследования.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{figures/11-derived-class-desc.png}
+	\caption{Страница производного класса Product и граф наследования}
+	\label{fig:doxygen-derived-class}
+\end{figure}
+
+Страница содержит методы \verb|__str__| и \verb|__repr__|, поля модели
+и связи с категориями, лицензиями, тегами, авторами и файлами каталога.
+Doxygen отображает состав производного класса и его место в иерархии.

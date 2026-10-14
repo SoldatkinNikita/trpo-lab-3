@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 IMAGE := texlive/texlive:latest
 
 MAIN := main.tex
@@ -6,17 +8,16 @@ OUTPUT_DIR := dist
 
 DOCKER_WORKDIR := /workspace
 
-DOCKER_RUN := docker run --rm \
+DOCKER_RUN := MSYS_NO_PATHCONV=1 docker run --rm \
 	-e HOME=/tmp \
-	-v "$(CURDIR):$(DOCKER_WORKDIR)" \
+	--mount "type=bind,source=$(CURDIR),target=$(DOCKER_WORKDIR)" \
 	-w $(DOCKER_WORKDIR) \
 	$(IMAGE)
 
 .PHONY: build clean shell
 
 build:
-	if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
-	if not exist $(OUTPUT_DIR) mkdir $(OUTPUT_DIR)
+	mkdir -p "$(BUILD_DIR)" "$(OUTPUT_DIR)"
 	$(DOCKER_RUN) \
 		latexmk \
 		-lualatex \
@@ -25,7 +26,7 @@ build:
 		-halt-on-error \
 		-outdir=$(BUILD_DIR) \
 		$(MAIN)
-	copy $(BUILD_DIR)\main.pdf $(OUTPUT_DIR)\main.pdf
+	cp "$(BUILD_DIR)/$(basename $(notdir $(MAIN))).pdf" "$(OUTPUT_DIR)/"
 
 clean:
 	$(DOCKER_RUN) \
